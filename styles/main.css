@@ -1,0 +1,12 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.flex-main {
+  margin: 0px auto;
+  display: flex;
+  justify-content: center;
+  border: 1px solid black;
+  width: 90%;
+}
