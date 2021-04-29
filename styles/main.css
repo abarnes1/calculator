@@ -23,40 +23,49 @@ h1 {
   width: 350px;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  border: 1px solid black;
+  border: 1px solid rgb(75, 73, 73);
   border-radius: 5px;
-  padding: 10px;
+  padding: 15px;
+  background-color: rgb(42, 42, 204);
+  box-shadow:  5px 5px 10px -2px rgb(160, 160, 210) inset, 
+              5px 5px 10px -2px rgb(128, 125, 125),
+              -5px -5px 10px -2px rgb(12, 12, 42) inset;
+              
 }
 
 .calc-display {
   background-color: lightgray;
   width: 100%;
-  height: 25px;
+  height: 50px;
   border-radius: 5px;
-  margin: 10px;
+  margin: 15px 10px 10px 10px;
   padding: 5px;
-  font-size: 1em;
+  font-size: 3em;
+  font-family: monospace;
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
 .calc-button {
-  /* box-sizing: border-box; */
-  background-color: blueviolet;
+  background-color: white;
   border-radius: 5px;
   width: 70px;
   margin: 5px;
   padding: 10px 5px;
-  color: whitesmoke;
+  color: blue;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 .operation-button {
-  background-color: teal;
+  background-color: rgb(207, 17, 17);
+  color: whitesmoke;
 }
 
 .utility-button {
-  background-color: tomato;
+  background-color: rgb(207, 17, 17);
+  color: whitesmoke;
 }
 
 #model {
