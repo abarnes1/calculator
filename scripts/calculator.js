@@ -2,9 +2,16 @@ const displayMain = document.querySelector("#displayMain");
 const displayOperation = document.querySelector("#displayOperation");
 
 let resetInputOnNextDigit = true;
-let inputString = "0";
-let storedNumber = 0;
-let operation = null;
+let inputBuffer = "0";
+let storedResult = 0;
+let operator = "1";
+
+// const calculator = {
+//   resetInputOnNextDigit: true,
+//   inputBuffer: "0",
+//   storedResult: 0,
+//   operation: "",
+// }
 
 console.log(displayMain);
 
@@ -22,8 +29,9 @@ function initializeButtonEvents(){
   const operationButtons = Array.from(document.querySelectorAll(".operation-button"));
   operationButtons.forEach(button => {
     button.addEventListener('click', (e) => {
-      storedNumber = inputString;
-      operation = e.target.value;
+      storedNumber = inputBuffer;
+      operator = e.target.value;
+      console.log(`Operator set: ${operator}`);
 
       resetInputOnNextDigit = true;
 
@@ -33,46 +41,89 @@ function initializeButtonEvents(){
 
   const clearInput = document.querySelector("#clearInput");
   clearInput.addEventListener('click', () => {
-    inputString = "0";
+    inputBuffer = "0";
     updateDisplay();
   });
 
   const clearAll = document.querySelector("#clearAll");
   clearAll.addEventListener('click', () => resetCalculator());
+
+  const equal = document.querySelector("#equals");
+  equal.addEventListener('click', () => {
+    console.log(`Equals operator: ${operator}`);
+    storedNumber = operate(4, 4, operator)
+    resetInputOnNextDigit = true;
+    updateDisplay();
+  });
 }
 
-function appendInput(input) {
+function appendInput(digit) {
+  console.log(`Input Buffer Before: ${inputBuffer}`)
   if (resetInputOnNextDigit) {
-    inputString = "0";
+    inputBuffer = "0";
     resetInputOnNextDigit = false;
   }
 
-  if (inputString === "0") {
-    inputString = "";
+  if (digit === "." && inputBuffer.indexOf(".") === -1){
+    inputBuffer += digit;
+  } else {
+    if (inputBuffer.startsWith("0") && inputBuffer.indexOf(".") === -1) {
+      inputBuffer = digit;
+    } else {
+      inputBuffer += digit;
+    }
   }
-
-  if (inputString.indexOf(".") === -1){
-    inputString += input;
-  } else if(input !== "."){
-    inputString += input;
-  }
-
-  updateDisplay();
+  console.log(`Input Buffer After: ${inputBuffer}`)
 }
 
 function operate(num1, num2, operator) {
-  
+  // let computed = NaN;
+  console.log(`Operating: ${num1}, ${num2}, ${operator}`);
+  let computed = 0;
+
+  if (operator === '+') {
+    computed = num1 + num2;
+  }
+
+  if (operator === '-') {
+    computed = num1 - num2;
+  }
+
+  if (operator === 'x') {
+    computed = num1 * num2;
+  }
+
+  if (operator === '/') {
+    computed = num1 / num2;
+  }
+
+  if (operator === 'negate') {
+    computed = num2 * -1;
+  }
+
+  if (operator === 'sqrt') {
+    computed = Math.sqrt(num2);
+  }
+
+  return computed;
 }
 
-function updateDisplay(){
-  displayMain.textContent = numberDisplayString(inputString);
-  displayOperation.textContent = getOperationDisplay();
+function updateDisplay() {
+  console.log("updating display...");
+  displayMain.textContent = inputBuffer;
+  displayOperation.textContent = getExpressionString();
 }
 
-function getOperationDisplay() {
+function getExpressionString() {
   let display = "";
-  if (operation !== null){
-    display = `${numberDisplayString(storedNumber)} ${operation}`;
+  if (operation) {
+    if (operation === "sqrt") {
+      
+    } else if (operation === "negate") {
+
+    } else {
+      display = `${numberDisplayString(storedNumber)} ${operation}`;
+    }
   }
 
   return display;
@@ -84,9 +135,10 @@ function numberDisplayString(number) {
 
 function resetCalculator() {
   resetInputOnNextDigit = true;
-  inputString = "0";
-  storedNumber = 0;
-  operation = null;
+  inputBuffer = "0";
+  storedResult = 0,
+  operation = ""
+  
   updateDisplay();
 }
 
