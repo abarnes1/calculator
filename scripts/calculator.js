@@ -1,49 +1,91 @@
 const displayMain = document.querySelector("#displayMain");
-let num1 = 0;
-let num2 = 0;
-let operation = null;
+const displayOperation = document.querySelector("#displayOperation");
 
-let firstNum = 0;
-let secondNum = 0;
+let resetInputOnNextDigit = true;
+let inputString = "0";
+let storedNumber = 0;
+let operation = null;
 
 console.log(displayMain);
 
 function initializeButtonEvents(){
-  let buttons = Array.from(document.querySelectorAll("button"));
-
-  buttons.forEach(button  => {
+  const digitButtons = Array.from(document.querySelectorAll(".digit"));
+  digitButtons.forEach(button  => {
     if(button.value){
       button.addEventListener('click', (e) => {
-        // if(!isNaN(e.target.value)){
-          appendDigit(e.target.value);
-        // }
+        appendInput(e.target.value);
+        updateDisplay();
       });
     }
-    // button.addEventListener('click', (e) => {
-    //   if(e.target.value && !isNaN(e.target.value)){
-    //     appendDigit(e.target.value);
-    //   } else {
-    //     console.log(e.target.id);
-    //   }
-    // });
   });
+
+  const operationButtons = Array.from(document.querySelectorAll(".operation-button"));
+  operationButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      storedNumber = inputString;
+      operation = e.target.value;
+
+      resetInputOnNextDigit = true;
+
+      updateDisplay();
+    });
+  });
+
+  const clearInput = document.querySelector("#clearInput");
+  clearInput.addEventListener('click', () => {
+    inputString = "0";
+    updateDisplay();
+  });
+
+  const clearAll = document.querySelector("#clearAll");
+  clearAll.addEventListener('click', () => resetCalculator());
 }
 
-function appendDigit(digit){
-  if(operation === null){
-    let temp = num1.toString() + digit.toString();
-    num1 = parseFloat(num1.toString() + digit.toString());
-    updateDisplay();
+function appendInput(input) {
+  if (resetInputOnNextDigit) {
+    inputString = "0";
+    resetInputOnNextDigit = false;
   }
+
+  if (inputString === "0") {
+    inputString = "";
+  }
+
+  if (inputString.indexOf(".") === -1){
+    inputString += input;
+  } else if(input !== "."){
+    inputString += input;
+  }
+
+  updateDisplay();
+}
+
+function operate(num1, num2, operator) {
+  
 }
 
 function updateDisplay(){
-  displayMain.textContent = num1;
+  displayMain.textContent = numberDisplayString(inputString);
+  displayOperation.textContent = getOperationDisplay();
+}
+
+function getOperationDisplay() {
+  let display = "";
+  if (operation !== null){
+    display = `${numberDisplayString(storedNumber)} ${operation}`;
+  }
+
+  return display;
+}
+
+function numberDisplayString(number) {
+  return number;
 }
 
 function resetCalculator() {
-  num1 = 0;
-  num2 = 0;
+  resetInputOnNextDigit = true;
+  inputString = "0";
+  storedNumber = 0;
   operation = null;
   updateDisplay();
 }
