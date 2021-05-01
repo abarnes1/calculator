@@ -2,12 +2,12 @@ const displayMain = document.querySelector("#displayMain");
 const displayOperation = document.querySelector("#displayOperation");
 const MAX_DIGITS = 15;
 
-let resetInputOnNextDigit = true;
-let lastButtonWasOperator = false;
-let operand1 = NaN;
-let operand2 = NaN;
+let resetInputOnNextDigit = true; //keeps last input on screen until new input is received
+let lastButtonClicked;
+let operandLeft = NaN;
+let operandRight = NaN;
 
-let lastOperator = "";
+let equalsOperator = "";
 let operator = "";
 
 function initializeButtonEvents(){
@@ -16,6 +16,8 @@ function initializeButtonEvents(){
     if(button.value){
       button.addEventListener('click', (e) => {
         appendToDisplay(e.target.value);
+        lastButtonClicked = button;
+        console.log(lastButtonClicked);
       });
     }
   });
@@ -24,61 +26,67 @@ function initializeButtonEvents(){
   operationButtons.forEach(button => {
     if(button.value){
       button.addEventListener('click', (e) => {
-        if(!operator) { //if we don't have an operator yet, set the "left" operand for the expression
-          operand1 = stringToNumber(displayMain.textContent);
-        } else if(lastButtonWasOperator) { //if 
-          operand2 = NaN;
+        if(hasStoredOperator()){  //if we have an operator
+          if(!isLastButtonOperator()){ //if last button was not an operator, do the operation, store the new operator, and update the display
+            operandRight = stringToNumber(displayMain.textContent);
+            let result = operate(operandLeft, operandRight, operator);
+            
+            operandLeft = result;
+            operandRight = NaN;
+            operator = e.target.value;
+            
+            displayMain.textContent = `${result}`;
+            displayOperation.textContent = `${operandLeft} ${operator}`;
+          } else { //otherwise store the replacement operator
+            console.log(`Operator changed: ${operator} to ${e.target.value}`);
+            operator = e.target.value;
+            displayOperation.textContent = `${operandLeft} ${operator}`;
+          }
         } else {
-          operand2 = stringToNumber(displayMain.textContent);
-          let result = operate(operand1, operand2, operator);
-          displayMain.textContent = result;
-          operand1 = result;
+          console.log("no operator so storing one... and left operand...");
+          operandLeft = stringToNumber(displayMain.textContent);
+          operator = e.target.value;
+          displayOperation.textContent = `${operandLeft} ${operator}`;
         }
-          
-        lastOperator = operator;
-        operator = e.target.value;
-
-        updateExpressionDisplay();
-        // displayOperation.textContent = `${operand1} ${operator}`;
-
-        lastButtonWasOperator = true;
+        
         resetInputOnNextDigit = true;
+        lastButtonClicked = button;
       });
     }
   });
 
-  const negate = document.querySelector("#negate");
-  negate.addEventListener('click', () => {
-    const text = displayMain.textContent;
-    let number = stringToNumber(text);
-    if(number){
-      number *= -1;
-      displayMain.textContent = numberToString(number);
+  // const negate = document.querySelector("#negate");
+  // negate.addEventListener('click', () => {
+  //   const text = displayMain.textContent;
+  //   let number = stringToNumber(text);
+  //   if(number){
+  //     number *= -1;
+  //     displayMain.textContent = numberToString(number);
 
-      if(lastOperator === equal.id){
-        operand1 = number;
-      } else {
-        operand2 = number;
-      }
-    }
-  });
+  //     if(lastOperator === equal.id){
+  //       operand1 = number;
+  //     } else {
+  //       operand2 = number;
+  //     }
+  //   }
+  // });
 
-  const squareRoot = document.querySelector("#squareRoot");
-  squareRoot.addEventListener('click', () => {
-    const text = displayMain.textContent;
-    let number = stringToNumber(text);
-    if(number){
-      displayOperation.textContent = `sqrt(${number})`;
-      number = Math.sqrt(number);
-      displayMain.textContent = numberToString(number);
+  // const squareRoot = document.querySelector("#squareRoot");
+  // squareRoot.addEventListener('click', () => {
+  //   const text = displayMain.textContent;
+  //   let number = stringToNumber(text);
+  //   if(number){
+  //     displayOperation.textContent = `sqrt(${number})`;
+  //     number = Math.sqrt(number);
+  //     displayMain.textContent = numberToString(number);
 
-      if(lastOperator === equal.id){
-        operand1 = number;
-      } else {
-        operand2 = number;
-      }
-    }
-  });
+  //     if(lastOperator === equal.id){
+  //       operand1 = number;
+  //     } else {
+  //       operand2 = number;
+  //     }
+  //   }
+  // });
 
   const clearInput = document.querySelector("#clearInput");
   clearInput.addEventListener('click', () => {
@@ -90,23 +98,28 @@ function initializeButtonEvents(){
 
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
-    if(operator){
-      if(lastOperator === equal.id){
-        operand1 = stringToNumber(displayMain.textContent);
-      } else {
-        operand2 = stringToNumber(displayMain.textContent);
-      }
-
-      lastOperator = equal.id;
-
-      const result = operate(operand1, operand2, operator);
+    console.log(`operator: ${operator}, equalsOperator: ${equalsOperator}`);
+    if(isLastButtonEquals()){ //pressing = = = = 
+        operandLeft = stringToNumber(displayMain.textContent);
+        let result = operate(operandLeft, operandRight, equalsOperator);
+        displayOperation.textContent = `${operandLeft} ${equalsOperator} ${operandRight} =`
+        displayMain.textContent = numberToString(result);
+    } else if (operator) { //normal 
+      operandRight = stringToNumber(displayMain.textContent);
+      let result = operate(operandLeft, operandRight, operator);
+      displayOperation.textContent = `${operandLeft} ${operator} ${operandRight} =`
       displayMain.textContent = numberToString(result);
-      updateExpressionDisplay();
-      operand1 = result;
-      resetInputOnNextDigit = true;
-    } else {
-      updateExpressionDisplay();
+
+    } else { //otherwise slap an equals sign on whatever is there
+      operandLeft = numberToString(displayMain.textContent);
+      displayOperation.textContent = `${operandLeft} =`;
     }
+
+    resetInputOnNextDigit = true; 
+    
+    equalsOperator = (operator) ? operator : equalsOperator;
+    operator = "";
+    lastButtonClicked = equal;
   });
 }
 
@@ -131,23 +144,43 @@ function appendToDisplay(digit) {
   displayMain.textContent = displayText;
 }
 
+function isLastButtonOperator(){
+  if(lastButtonClicked){
+    return lastButtonClicked.classList.contains("operation-button") ? true : false;
+  }
+
+  return false;
+}
+
+function isLastButtonEquals(){
+  if(lastButtonClicked){
+    return lastButtonClicked.id === "equals" ? true : false;
+  }
+
+  return false;
+}
+
+function hasStoredOperator(){
+  return Boolean(operator);
+}
+
 function updateExpressionDisplay(){
   let displayItems = [];
   //if we have an operator build the expression from left to right and display
-  if(!isNaN(operand1)) {
-    displayItems.push(operand1);
+  if(!isNaN(operandLeft)) {
+    displayItems.push(operandLeft);
     
     if(operator){
       displayItems.push(operator);
 
-      if(!isNaN(operand2)){
-        displayItems.push(operand2);
-
-        if(lastOperator === "equals"){
-          displayItems.push("=");
-        }
+      if(!isNaN(operandRight)){
+        displayItems.push(operandRight);
       }
     }
+  }
+
+  if(isLastButtonEquals()){
+    displayItems.push("=");
   }
 
   displayOperation.textContent = displayItems.join(" ");
@@ -158,6 +191,7 @@ function stringToNumber(stringNumber){
   if(stringNumber.indexOf(".") === -1){
     number = parseInt(stringNumber);
   } else if(stringNumber.indexOf("e") > -1) {
+    //solve exponent here
   } else {
     number = parseFloat(stringNumber);
   }
@@ -196,9 +230,10 @@ function numberToString(number) {
 }
 
 function resetCalculator() {
-  operand1 = NaN;
-  operand2 = NaN;
+  operandLeft = NaN;
+  operandRight = NaN;
   resetInputOnNextDigit = true;
+  lastButtonClicked = null;
   operator = "";
 
   displayMain.textContent = "0";
