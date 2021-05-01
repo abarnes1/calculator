@@ -2,9 +2,7 @@ const displayMain = document.querySelector("#displayMain");
 const displayOperation = document.querySelector("#displayOperation");
 const MAX_DIGITS = 15;
 
-let lastButtonPressed;
-
-
+let resetInputOnNextDigit = true;
 let operand1 = NaN;
 let operand2 = NaN;
 
@@ -12,48 +10,41 @@ let lastOperator = "";
 let operator = "";
 
 function initializeButtonEvents(){
-  const digitButtons = Array.from(document.querySelectorAll(".digit"));
+  const digitButtons = Array.from(document.querySelectorAll(".digit-button"));
   digitButtons.forEach(button  => {
     if(button.value){
       button.addEventListener('click', (e) => {
         appendToDisplay(e.target.value);
-
-        if(operand1){
-          expression = `${operand1} ${operator}`;
-          displayOperation.textContent = expression;  
-        }
       });
     }
   });
 
-  const operationButtons = Array.from(document.querySelectorAll(".operator-button"));
+  const operationButtons = Array.from(document.querySelectorAll(".operation-button"));
   operationButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      if(!operator) { //if no operator selected, store the current screen text to first operand 
-        console.log("we had no operator stored.");
-        operand1 = stringToNumber(displayMain.textContent);
-      } else if (lastOperator === "equals") {
-        operand1 = stringToNumber(displayMain.textContent);
-      } else {
-        operand2 = stringToNumber(displayMain.textContent);
-        let result = operate(operand1, operand2, operator);
-        displayMain.textContent = result;
-        displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;
-        operand1 = result;
-      }
-              
-      lastOperator = operator;
-      operator = e.target.value;
+    if(button.value){
+      button.addEventListener('click', (e) => {
+        if(!operator || lastOperator === "equals") { //if no operator selected, store the current input to the first operand 
+          operand1 = stringToNumber(displayMain.textContent);
+        } else {
+          operand2 = stringToNumber(displayMain.textContent);
+          let result = operate(operand1, operand2, operator);
+          displayMain.textContent = result;
+          operand1 = result;
+        }
+                
+        lastOperator = operator;
+        operator = e.target.value;
 
-      displayOperation.textContent = `${operand1} ${operator}`;
+        displayOperation.textContent = `${operand1} ${operator}`;
 
-      resetInputOnNextDigit = true;
-    });
+        resetInputOnNextDigit = true;
+      });
+    }
   });
 
   const negate = document.querySelector("#negate");
   negate.addEventListener('click', () => {
-    let text = displayMain.textContent;
+    const text = displayMain.textContent;
     let number = stringToNumber(text);
     if(number){
       number *= -1;
@@ -72,22 +63,24 @@ function initializeButtonEvents(){
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
     if(operator){
-      if(lastOperator === "equals"){
+      if(lastOperator === equal.id){
         operand1 = stringToNumber(displayMain.textContent);
       } else {
         operand2 = stringToNumber(displayMain.textContent);
       }
       
-      let result = operate(operand1, operand2, operator);
+      const result = operate(operand1, operand2, operator);
       displayMain.textContent = numberToString(result);
-      displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;
+      displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;  //don't delete! this one works
+      
       operand1 = result;
       resetInputOnNextDigit = true;
     } else {
       displayOperation.textContent += ' =';
     }
 
-    lastOperator = "equals";
+    updateDisplay();
+    lastOperator = equal.id;
   });
 }
 
@@ -112,16 +105,35 @@ function appendToDisplay(digit) {
   displayMain.textContent = displayText;
 }
 
+function updateDisplay(){
+  let displayItems = [];
+  //if we have an operator try to display the operands
+  if(operand1) {
+    displayItems.push(operand1);
+    
+    if(operator){
+      displayItems.push(operator);
+
+      if(operand2){
+        displayItems.push(operand2);
+      }
+
+      if(operator === "equals"){
+        displayItems.push("=");
+      }
+    }
+  }
+
+  displayOperation.textContent = displayItems.join(" ");
+}
+
 function stringToNumber(stringNumber){
   let number = NaN;
   if(stringNumber.indexOf(".") === -1){
-    // console.log("parsing int...");
     number = parseInt(stringNumber);
   } else if(stringNumber.indexOf("e") > -1) {
-    //deal with exponent here
   } else {
     number = parseFloat(stringNumber);
-    // console.log("parsing float...");
   }
   
   return number;
@@ -147,10 +159,6 @@ function operate(num1, num2, operator) {
     computed = num1 / num2;
   }
 
-  if (operator === 'negate') {
-    computed = num2 * -1;
-  }
-
   // if (operator === 'sqrt') {
   //   computed = Math.sqrt(num2);
   // }
@@ -166,16 +174,10 @@ function resetCalculator() {
   operand1 = NaN;
   operand2 = NaN;
   resetInputOnNextDigit = true;
-  expression = "";
   operator = "";
-  lastButtonPressed = null;
 
   displayMain.textContent = "0";
   displayOperation.textContent = "";
-}
-
-function logOperands(){
-  console.log(`Operand1: ${operand1}, Operand2: ${operand2}, Operator: ${operator}`);
 }
 
 resetCalculator();

@@ -51,16 +51,19 @@ h1 {
 }
 
 .calc-button {
-  background-color: white;
   font-family: inherit;
   border-radius: 5px;
   width: 75px;
   padding: 10px 0px;
   margin: 5px 0px;
-  color: blue;
   font-size: 16pt;
   font-weight: bold;
   box-shadow: 2px 2px 1px -1px black;
+}
+
+.digit-button {
+  background-color: white;
+  color: blue;
 }
 
 .calc-button:active {
@@ -68,15 +71,15 @@ h1 {
   box-shadow: -2px -2px 1px -1px black;
 }
 
-.operator-button {
+.operation-button {
   background-color: rgb(207, 17, 17);
   color: whitesmoke;
 }
 
-.utility-button {
+/* .utility-button {
   background-color: rgb(207, 17, 17);
   color: whitesmoke;
-}
+} */
 
 /* button::-moz-focus-inner {
   padding: 0px;
