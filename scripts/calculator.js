@@ -34,7 +34,7 @@ function initializeButtonEvents(){
           displayMain.textContent = result;
           operand1 = result;
         }
-                
+          
         lastOperator = operator;
         operator = e.target.value;
 
@@ -53,6 +53,23 @@ function initializeButtonEvents(){
     let number = stringToNumber(text);
     if(number){
       number *= -1;
+      displayMain.textContent = numberToString(number);
+
+      if(lastOperator === equal.id){
+        operand1 = number;
+      } else {
+        operand2 = number;
+      }
+    }
+  });
+
+  const squareRoot = document.querySelector("#squareRoot");
+  squareRoot.addEventListener('click', () => {
+    const text = displayMain.textContent;
+    let number = stringToNumber(text);
+    if(number){
+      displayOperation.textContent = `sqrt(${number})`;
+      number = Math.sqrt(number);
       displayMain.textContent = numberToString(number);
 
       if(lastOperator === equal.id){
@@ -96,7 +113,7 @@ function initializeButtonEvents(){
 function appendToDisplay(digit) {
   let displayText = displayMain.textContent;
 
-  if (resetInputOnNextDigit) {
+  if (resetInputOnNextDigit || isNaN(displayText)) {
     displayText = "0";
     resetInputOnNextDigit = false;
   }
@@ -175,7 +192,7 @@ function operate(num1, num2, operator) {
 }
 
 function numberToString(number) {
-  return number.toString();
+  return isNaN(number) ? "Error!" : number.toString();
 }
 
 function resetCalculator() {
