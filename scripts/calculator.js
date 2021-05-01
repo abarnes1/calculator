@@ -4,9 +4,11 @@ const MAX_DIGITS = 15;
 
 let lastButtonPressed;
 
-let chainNextOperator = false;
+
 let operand1 = NaN;
 let operand2 = NaN;
+
+let lastOperator = "";
 let operator = "";
 
 function initializeButtonEvents(){
@@ -20,8 +22,6 @@ function initializeButtonEvents(){
           expression = `${operand1} ${operator}`;
           displayOperation.textContent = expression;  
         }
-
-        lastButtonPressed = button;
       });
     }
   });
@@ -31,55 +31,39 @@ function initializeButtonEvents(){
     button.addEventListener('click', (e) => {
       if(!operator) { //if no operator selected, store the current screen text to first operand 
         console.log("we had no operator stored.");
-        // console.log(`before parse: ${operand1}`);
         operand1 = stringToNumber(displayMain.textContent);
-        chainNextOperator = true;
-        // console.log(`after parse: ${operand1}`);
+      } else if (lastOperator === "equals") {
+        operand1 = stringToNumber(displayMain.textContent);
       } else {
-        if(chainNextOperator){
-          operand2 = stringToNumber(displayMain.textContent);
-          let result = operate(operand1, operand2, operator);
-          displayMain.textContent = result;
-          displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;
-          operand1 = result;
-        }
+        operand2 = stringToNumber(displayMain.textContent);
+        let result = operate(operand1, operand2, operator);
+        displayMain.textContent = result;
+        displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;
+        operand1 = result;
       }
-
+              
+      lastOperator = operator;
       operator = e.target.value;
+
       displayOperation.textContent = `${operand1} ${operator}`;
 
       resetInputOnNextDigit = true;
-
-      lastButtonPressed = button;
     });
   });
 
   const negate = document.querySelector("#negate");
   negate.addEventListener('click', () => {
-    console.log("Start of Negate");
-    console.log(`--chainNext: ${chainNextOperator}`);
-    console.log(`--resetInput: ${resetInputOnNextDigit}`);
-    logOperands();
     let text = displayMain.textContent;
     let number = stringToNumber(text);
     if(number){
       number *= -1;
-      if(lastButtonPressed)
-
-      //how do you know one to negate? operand1 or operand2
-      operand1 = number;
       displayMain.textContent = numberToString(number);
-      lastButtonPressed = negate;
     }
-    logOperands();
-    console.log("  End of Negate");
   });
 
   const clearInput = document.querySelector("#clearInput");
   clearInput.addEventListener('click', () => {
     displayMain.textContent = "0";
-
-    lastButtonPressed = clearInput;
   });
 
   const clearAll = document.querySelector("#clearAll");
@@ -87,13 +71,8 @@ function initializeButtonEvents(){
 
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
-    console.log("Start of Equals");
-    logOperands();
-
     if(operator){
-      chainNextOperator = false;
-
-      if(lastButtonPressed.id === "equals"){
+      if(lastOperator === "equals"){
         operand1 = stringToNumber(displayMain.textContent);
       } else {
         operand2 = stringToNumber(displayMain.textContent);
@@ -108,10 +87,7 @@ function initializeButtonEvents(){
       displayOperation.textContent += ' =';
     }
 
-    lastButtonPressed = equal;
-
-    console.log("  End of Equals");
-    logOperands();
+    lastOperator = "equals";
   });
 }
 
@@ -171,9 +147,9 @@ function operate(num1, num2, operator) {
     computed = num1 / num2;
   }
 
-  // if (operator === 'negate') {
-  //   computed = num2 * -1;
-  // }
+  if (operator === 'negate') {
+    computed = num2 * -1;
+  }
 
   // if (operator === 'sqrt') {
   //   computed = Math.sqrt(num2);
