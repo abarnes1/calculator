@@ -24,10 +24,10 @@ function initializeButtonEvents(){
   operationButtons.forEach(button => {
     if(button.value){
       button.addEventListener('click', (e) => {
-        if(!operator) { //if no operator selected or we just pressed equals, store the current input to the first operand for the "left" side
+        if(!operator) { //if we don't have an operator yet, set the "left" operand for the expression
           operand1 = stringToNumber(displayMain.textContent);
-        } else if(lastButtonWasOperator) {
-          operand2 = NaN
+        } else if(lastButtonWasOperator) { //if 
+          operand2 = NaN;
         } else {
           operand2 = stringToNumber(displayMain.textContent);
           let result = operate(operand1, operand2, operator);
@@ -54,6 +54,12 @@ function initializeButtonEvents(){
     if(number){
       number *= -1;
       displayMain.textContent = numberToString(number);
+
+      if(lastOperator === equal.id){
+        operand1 = number;
+      } else {
+        operand2 = number;
+      }
     }
   });
 
