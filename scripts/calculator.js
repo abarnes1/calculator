@@ -3,6 +3,7 @@ const displayOperation = document.querySelector("#displayOperation");
 const MAX_DIGITS = 15;
 
 let resetInputOnNextDigit = true;
+let lastButtonWasOperator = false;
 let operand1 = NaN;
 let operand2 = NaN;
 
@@ -23,8 +24,10 @@ function initializeButtonEvents(){
   operationButtons.forEach(button => {
     if(button.value){
       button.addEventListener('click', (e) => {
-        if(!operator || lastOperator === "equals") { //if no operator selected, store the current input to the first operand 
+        if(!operator) { //if no operator selected or we just pressed equals, store the current input to the first operand for the "left" side
           operand1 = stringToNumber(displayMain.textContent);
+        } else if(lastButtonWasOperator) {
+          operand2 = NaN
         } else {
           operand2 = stringToNumber(displayMain.textContent);
           let result = operate(operand1, operand2, operator);
@@ -35,8 +38,10 @@ function initializeButtonEvents(){
         lastOperator = operator;
         operator = e.target.value;
 
-        displayOperation.textContent = `${operand1} ${operator}`;
+        updateExpressionDisplay();
+        // displayOperation.textContent = `${operand1} ${operator}`;
 
+        lastButtonWasOperator = true;
         resetInputOnNextDigit = true;
       });
     }
@@ -68,19 +73,17 @@ function initializeButtonEvents(){
       } else {
         operand2 = stringToNumber(displayMain.textContent);
       }
-      
+
+      lastOperator = equal.id;
+
       const result = operate(operand1, operand2, operator);
       displayMain.textContent = numberToString(result);
-      displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;  //don't delete! this one works
-      
+      updateExpressionDisplay();
       operand1 = result;
       resetInputOnNextDigit = true;
     } else {
-      displayOperation.textContent += ' =';
+      updateExpressionDisplay();
     }
-
-    updateDisplay();
-    lastOperator = equal.id;
   });
 }
 
@@ -105,21 +108,21 @@ function appendToDisplay(digit) {
   displayMain.textContent = displayText;
 }
 
-function updateDisplay(){
+function updateExpressionDisplay(){
   let displayItems = [];
-  //if we have an operator try to display the operands
-  if(operand1) {
+  //if we have an operator build the expression from left to right and display
+  if(!isNaN(operand1)) {
     displayItems.push(operand1);
     
     if(operator){
       displayItems.push(operator);
 
-      if(operand2){
+      if(!isNaN(operand2)){
         displayItems.push(operand2);
-      }
 
-      if(operator === "equals"){
-        displayItems.push("=");
+        if(lastOperator === "equals"){
+          displayItems.push("=");
+        }
       }
     }
   }
@@ -140,7 +143,6 @@ function stringToNumber(stringNumber){
 }
 
 function operate(num1, num2, operator) {
-  // console.log(`Operating: ${num1}, ${operator}, ${num2}`);
   let computed = NaN;
 
   if (operator === '+') {
