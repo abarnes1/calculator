@@ -26,8 +26,10 @@ function initializeButtonEvents(){
   operationButtons.forEach(button => {
     if(button.value){
       button.addEventListener('click', (e) => {
-        if(hasStoredOperator()){  //if we have an operator
-          if(!isLastButtonOperator()){ //if last button was not an operator, do the operation, store the new operator, and update the display
+        if(hasStoredOperator()){ 
+          
+          //if last button was not an operator: do the operation, store the new operator, and update the display
+          if(!isLastButtonOperator()){ 
             operandRight = stringToNumber(displayMain.textContent);
             let result = operate(operandLeft, operandRight, operator);
             
@@ -37,13 +39,11 @@ function initializeButtonEvents(){
             
             displayMain.textContent = `${result}`;
             displayOperation.textContent = `${operandLeft} ${operator}`;
-          } else { //otherwise store the replacement operator
-            console.log(`Operator changed: ${operator} to ${e.target.value}`);
+          } else {  //otherwise store the replacement operator
             operator = e.target.value;
             displayOperation.textContent = `${operandLeft} ${operator}`;
           }
-        } else {
-          console.log("no operator so storing one... and left operand...");
+        } else { //first time operator was pressed, store operator and first operand
           operandLeft = stringToNumber(displayMain.textContent);
           operator = e.target.value;
           displayOperation.textContent = `${operandLeft} ${operator}`;
@@ -55,21 +55,14 @@ function initializeButtonEvents(){
     }
   });
 
-  // const negate = document.querySelector("#negate");
-  // negate.addEventListener('click', () => {
-  //   const text = displayMain.textContent;
-  //   let number = stringToNumber(text);
-  //   if(number){
-  //     number *= -1;
-  //     displayMain.textContent = numberToString(number);
-
-  //     if(lastOperator === equal.id){
-  //       operand1 = number;
-  //     } else {
-  //       operand2 = number;
-  //     }
-  //   }
-  // });
+  const negate = document.querySelector("#negate");
+  negate.addEventListener('click', () => {
+    let number = stringToNumber(displayMain.textContent);
+    if(number){
+      number *= -1;
+      displayMain.textContent = numberToString(number);
+    }
+  });
 
   // const squareRoot = document.querySelector("#squareRoot");
   // squareRoot.addEventListener('click', () => {
