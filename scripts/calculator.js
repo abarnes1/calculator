@@ -1,19 +1,13 @@
 const displayMain = document.querySelector("#displayMain");
 const displayOperation = document.querySelector("#displayOperation");
 
+
 let resetInputOnNextDigit = true;
-let inputBuffer = "0";
-let storedResult = 0;
-let operator = "1";
-
-// const calculator = {
-//   resetInputOnNextDigit: true,
-//   inputBuffer: "0",
-//   storedResult: 0,
-//   operation: "",
-// }
-
-console.log(displayMain);
+let operand1 = NaN;
+let operand2 = NaN;
+let screenText = "0";
+let lastResult = NaN;
+let operator = "";
 
 function initializeButtonEvents(){
   const digitButtons = Array.from(document.querySelectorAll(".digit"));
@@ -21,28 +15,37 @@ function initializeButtonEvents(){
     if(button.value){
       button.addEventListener('click', (e) => {
         appendInput(e.target.value);
-        updateDisplay();
+        displayMain.textContent = screenText;
+
+        if(operand1){
+          expression = `${operand1} ${operator}`;
+          displayOperation.textContent = expression;  
+        }
       });
     }
   });
 
-  const operationButtons = Array.from(document.querySelectorAll(".operation-button"));
+  const operationButtons = Array.from(document.querySelectorAll(".operator-button"));
   operationButtons.forEach(button => {
     button.addEventListener('click', (e) => {
-      storedNumber = inputBuffer;
+      if(!operator) { //if no operator selected, store the current screen text to first operand 
+        console.log("we had no operator stored.");
+        operand1 = stringToNumber(screenText);
+        displayOperation.textContent = `${operand1} ${operator}`;
+      } else {  //otherwise switch the operator
+        console.log("Operator was stored.");
+      }
+
       operator = e.target.value;
-      console.log(`Operator set: ${operator}`);
+      displayOperation.textContent = `${operand1} ${operator}`;
 
       resetInputOnNextDigit = true;
-
-      updateDisplay();
     });
   });
 
   const clearInput = document.querySelector("#clearInput");
   clearInput.addEventListener('click', () => {
-    inputBuffer = "0";
-    updateDisplay();
+    screenText = "0";
   });
 
   const clearAll = document.querySelector("#clearAll");
@@ -50,36 +53,50 @@ function initializeButtonEvents(){
 
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
-    console.log(`Equals operator: ${operator}`);
-    storedNumber = operate(4, 4, operator)
+
+    operand2 = stringToNumber(screenText);
+    lastResult = operate(operand1, operand2, operator);
+    displayMain.textContent = lastResult;
+    displayOperation.textContent = `${operand1} ${operator} ${operand2} =`;
+    operand1 = lastResult;
     resetInputOnNextDigit = true;
-    updateDisplay();
   });
 }
 
 function appendInput(digit) {
-  console.log(`Input Buffer Before: ${inputBuffer}`)
   if (resetInputOnNextDigit) {
-    inputBuffer = "0";
+    screenText = "0";
     resetInputOnNextDigit = false;
   }
 
-  if (digit === "." && inputBuffer.indexOf(".") === -1){
-    inputBuffer += digit;
+  if (digit === "." && screenText.indexOf(".") === -1){
+    screenText += digit;
   } else {
-    if (inputBuffer.startsWith("0") && inputBuffer.indexOf(".") === -1) {
-      inputBuffer = digit;
+    if (screenText.startsWith("0") && screenText.indexOf(".") === -1) {
+      screenText = digit;
     } else {
-      inputBuffer += digit;
+      screenText += digit;
     }
   }
-  console.log(`Input Buffer After: ${inputBuffer}`)
+}
+
+function stringToNumber(stringNumber){
+  let number = NaN;
+  if(stringNumber.indexOf(".") === -1){
+    number = parseInt(stringNumber);
+  } else if(stringNumber.indexOf("e") === -1) {
+    //deal with exponent here
+  } else {
+    number = parseFloat(stringNumber);
+    console.log(number);
+  }
+  
+  return number;
 }
 
 function operate(num1, num2, operator) {
-  // let computed = NaN;
   console.log(`Operating: ${num1}, ${num2}, ${operator}`);
-  let computed = 0;
+  let computed = NaN;
 
   if (operator === '+') {
     computed = num1 + num2;
@@ -97,36 +114,15 @@ function operate(num1, num2, operator) {
     computed = num1 / num2;
   }
 
-  if (operator === 'negate') {
-    computed = num2 * -1;
-  }
+  // if (operator === 'negate') {
+  //   computed = num2 * -1;
+  // }
 
-  if (operator === 'sqrt') {
-    computed = Math.sqrt(num2);
-  }
+  // if (operator === 'sqrt') {
+  //   computed = Math.sqrt(num2);
+  // }
 
   return computed;
-}
-
-function updateDisplay() {
-  console.log("updating display...");
-  displayMain.textContent = inputBuffer;
-  displayOperation.textContent = getExpressionString();
-}
-
-function getExpressionString() {
-  let display = "";
-  if (operation) {
-    if (operation === "sqrt") {
-      
-    } else if (operation === "negate") {
-
-    } else {
-      display = `${numberDisplayString(storedNumber)} ${operation}`;
-    }
-  }
-
-  return display;
 }
 
 function numberDisplayString(number) {
@@ -134,12 +130,16 @@ function numberDisplayString(number) {
 }
 
 function resetCalculator() {
+  operand1 = NaN;
+  operand2 = NaN;
   resetInputOnNextDigit = true;
-  inputBuffer = "0";
-  storedResult = 0,
-  operation = ""
-  
-  updateDisplay();
+  screenText = "0";
+  lastResult = 0;
+  expression = "";
+  operator = "";
+
+  displayMain.textContent = "0";
+  displayOperation.textContent = "";
 }
 
 resetCalculator();
