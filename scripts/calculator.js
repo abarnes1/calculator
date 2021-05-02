@@ -39,11 +39,13 @@ function initializeButtonEvents(){
             
             displayMain.textContent = `${result}`;
             displayOperation.textContent = `${operandLeft} ${operator}`;
-          } else {  //otherwise store the replacement operator
+          } else {  
+            //otherwise store the replacement operator
             operator = e.target.value;
             displayOperation.textContent = `${operandLeft} ${operator}`;
           }
-        } else { //first time operator was pressed, store operator and first operand
+        } else { 
+          //first time an operator was pressed, store operator and first operand
           operandLeft = stringToNumber(displayMain.textContent);
           operator = e.target.value;
           displayOperation.textContent = `${operandLeft} ${operator}`;
@@ -64,22 +66,22 @@ function initializeButtonEvents(){
     }
   });
 
-  // const squareRoot = document.querySelector("#squareRoot");
-  // squareRoot.addEventListener('click', () => {
-  //   const text = displayMain.textContent;
-  //   let number = stringToNumber(text);
-  //   if(number){
-  //     displayOperation.textContent = `sqrt(${number})`;
-  //     number = Math.sqrt(number);
-  //     displayMain.textContent = numberToString(number);
+  const squareRoot = document.querySelector("#squareRoot");
+  squareRoot.addEventListener('click', () => {
+    const text = displayMain.textContent;
+    let number = stringToNumber(text);
+    if(number){
+      displayOperation.textContent = `sqrt(${number})`;
+      number = Math.sqrt(number);
+      displayMain.textContent = numberToString(number);
 
-  //     if(lastOperator === equal.id){
-  //       operand1 = number;
-  //     } else {
-  //       operand2 = number;
-  //     }
-  //   }
-  // });
+      if(lastOperator === equal.id){
+        operand1 = number;
+      } else {
+        operand2 = number;
+      }
+    }
+  });
 
   const clearInput = document.querySelector("#clearInput");
   clearInput.addEventListener('click', () => {
@@ -92,18 +94,21 @@ function initializeButtonEvents(){
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
     console.log(`operator: ${operator}, equalsOperator: ${equalsOperator}`);
-    if(isLastButtonEquals()){ //pressing = = = = 
+
+    //pressing = = = = = to repeat the last operation
+    if(isLastButtonEquals()){ 
         operandLeft = stringToNumber(displayMain.textContent);
         let result = operate(operandLeft, operandRight, equalsOperator);
         displayOperation.textContent = `${operandLeft} ${equalsOperator} ${operandRight} =`
         displayMain.textContent = numberToString(result);
-    } else if (operator) { //normal 
+    } else if (operator) { 
+      //normal a + b type of operation
       operandRight = stringToNumber(displayMain.textContent);
       let result = operate(operandLeft, operandRight, operator);
       displayOperation.textContent = `${operandLeft} ${operator} ${operandRight} =`
       displayMain.textContent = numberToString(result);
-
-    } else { //otherwise slap an equals sign on whatever is there
+    } else { 
+      //pressing = without an operator
       operandLeft = numberToString(displayMain.textContent);
       displayOperation.textContent = `${operandLeft} =`;
     }
