@@ -14,10 +14,10 @@ function testFunc(){
   // result = getDisplayString(test, MAX_DIGITS);
   // console.log(`result: ${result}`)
 
-  test = parseFloat("913517247483640800");
-  console.log(`testing: ${test}`);
-  result = getDisplayString(test, MAX_DIGITS);
-  console.log(`result: ${result}`)
+  // test = parseFloat("913517247483640800");
+  // console.log(`testing: ${test}`);
+  // result = getDisplayString(test, MAX_DIGITS);
+  // console.log(`result: ${result}`)
 
   // test = parseFloat("-12345678901234567890");
   // console.log(`testing: ${test}`);
@@ -74,17 +74,27 @@ function testFunc(){
   // result = getDisplayString(test, MAX_DIGITS);
   // console.log(` result: ${result}`)
 
-  test = parseFloat("-11.2345");
+  // test = parseFloat("-11.2345");
+  // console.log(`testing: ${test}`);
+  // result = getDisplayString(test, MAX_DIGITS);
+  // console.log(` result: ${result}`)
+
+  // test = parseFloat("99980001.000000");
+  // console.log(`testing: ${test}`);
+  // result = getDisplayString(test, MAX_DIGITS);
+  // console.log(` result: ${result}`)
+
+  // test = parseFloat("-99980001.000000");
+  // console.log(`testing: ${test}`);
+  // result = getDisplayString(test, MAX_DIGITS);
+  // console.log(` result: ${result}`)
+
+  test = parseFloat("24250981748244.48");
   console.log(`testing: ${test}`);
   result = getDisplayString(test, MAX_DIGITS);
   console.log(` result: ${result}`)
-
-  test = parseFloat("99980001.000000");
-  console.log(`testing: ${test}`);
-  result = getDisplayString(test, MAX_DIGITS);
-  console.log(` result: ${result}`)
-
-  test = parseFloat("-99980001.000000");
+  
+  test = parseFloat("116627143.6799999922514");
   console.log(`testing: ${test}`);
   result = getDisplayString(test, MAX_DIGITS);
   console.log(` result: ${result}`)

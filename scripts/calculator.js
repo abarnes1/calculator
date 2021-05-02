@@ -207,17 +207,11 @@ function operate(num1, num2, operator) {
 
   if (operator === '+') {
     computed = num1 + num2;
-  }
-
-  if (operator === '-') {
+  } else if (operator === '-') {
     computed = num1 - num2;
-  }
-
-  if (operator === 'x') {
+  } else if (operator === 'x') {
     computed = num1 * num2;
-  }
-
-  if (operator === '/') {
+  } else if (operator === '/') {
     computed = num1 / num2;
   }
 
@@ -294,8 +288,20 @@ function getDisplayString(number, maxLength){
   } 
   
   //"normal" numbers 123456.789000 or -123456.7890000
-  result = (number.toString().length > maxLength) ? stringValue.substring(0, maxLength) : number.toString();
-  //remove zeros on end if after decimal
+
+  if(number.toString().length > maxLength) {
+    if((stringValue.indexOf(".") + 1) === maxLength){
+      result = Math.round(number).toString();
+    } else {
+      stringValue.substring(0, maxLength)
+    }
+  } else {
+    result = number.toString();
+  }
+
+  console.log(result);
+
+  if(result.indexOf)
 
 // console.log(`Number ${number} converted string: ${result}`);
   return result;
