@@ -80,7 +80,6 @@ function initializeButtonEvents(){
     if(hasStoredOperator()){
       let number = stringToNumber(displayMain.textContent);
       operandRight = Math.sqrt(number);
-      console.log(operandRight);
 
       displayOperation.textContent = `${operandLeft} ${operator} sqrt(${number})`;
       displayMain.textContent = numberToString(operandRight);
@@ -88,7 +87,6 @@ function initializeButtonEvents(){
       //no operator so square root the input and treat as left operand
       let number = stringToNumber(displayMain.textContent);
       operandLeft = Math.sqrt(number);
-      console.log(`left: ${operandLeft}`);
 
       displayOperation.textContent = `sqrt(${number})`;
       displayMain.textContent = numberToString(operandLeft);
@@ -123,7 +121,6 @@ function initializeButtonEvents(){
 
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
-    console.log(`operator: ${operator}, equalsOperator: ${equalsOperator}`);
 
     //pressing = = = = = to repeat the last operation
     if(isLastButtonEquals() && hasStoredEqualsOperator()){ 
@@ -139,7 +136,7 @@ function initializeButtonEvents(){
       displayMain.textContent = numberToString(result);
     } else { 
       //pressing = without an operator
-      operandLeft = numberToString(displayMain.textContent);
+      operandLeft = stringToNumber(displayMain.textContent);
       displayOperation.textContent = `${operandLeft} =`;
     }
 
@@ -222,7 +219,14 @@ function updateExpressionDisplay(){
 }
 
 function stringToNumber(stringNumber){
+  console.log(`Parsing: ${stringNumber}`);
   let number = NaN;
+  // if(stringNumber.indexOf("e") > -1){
+  //   //solve exponent here
+  // } else {
+  //   number = parseFloat(stringNumber);
+  // }
+
   if(stringNumber.indexOf(".") === -1){
     number = parseInt(stringNumber);
   } else if(stringNumber.indexOf("e") > -1) {
@@ -231,6 +235,8 @@ function stringToNumber(stringNumber){
     number = parseFloat(stringNumber);
   }
   
+  console.log(`Parse output: ${number}`);
+
   return number;
 }
 
@@ -257,13 +263,23 @@ function operate(num1, num2, operator) {
 }
 
 function numberToString(number) {
-  let result;
+  let result = "";
   if (isNaN(number)) {
     result = "Error!";
   } else if (!isFinite(number)){
     result = "Overflow!";
+  } else {
+    result = number.toFixed(12);
+    if (result.includes(".")){
+      result = result.replace(/0*$/, ""); //trims 0 from the end
+    }
+  
+    result = result.replace(/\.$/, "", ""); //trims . from the end
   }
-  return isNaN(number) ? "Error :(" : number.toString();
+
+  console.log(`Number ${number} converted string: ${result}`);
+
+  return result;
 }
 
 function resetCalculator() {
