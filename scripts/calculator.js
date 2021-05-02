@@ -12,6 +12,23 @@ let errorState = false;
 let equalsOperator = "";
 let operator = "";
 
+function initializeKeyBinds() {
+  window.addEventListener('keydown', (e) => {
+    let button = document.querySelector(`button[event-key="${e.key}"]`);
+
+    if(button){
+      button.click();
+      button.active = true;
+    }
+    console.log(button);
+    console.log(e.key)
+  });
+  // const allButtons = Array.from(document.querySelectorAll("button"));
+  // allButtons.forEach(button => {
+    
+  // });
+}
+
 function initializeButtonEvents(){
   const digitButtons = Array.from(document.querySelectorAll(".digit-button"));
   digitButtons.forEach(button  => {
@@ -305,3 +322,4 @@ function resetCalculator() {
 
 resetCalculator();
 initializeButtonEvents(); 
+initializeKeyBinds();
