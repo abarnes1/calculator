@@ -1,4 +1,4 @@
-function testFunc(){
+function conversionTests(){
   let test;
   let result;
 
@@ -109,4 +109,4 @@ function testFunc(){
 
 }
 
-testFunc();
+conversionTests();

@@ -6,12 +6,8 @@ let resetInputOnNextDigit = true; //keeps last input on screen until new input i
 let lastButtonClicked;
 let operandLeft = NaN;
 let operandRight = NaN;
-
-//
-let lastResult = {  
-    asFloat: NaN,
-    asString: NaN.toString()
-}
+let lastResult = NaN;
+let errorState = false;
 
 let equalsOperator = "";
 let operator = "";
@@ -29,6 +25,10 @@ function initializeButtonEvents(){
           equalsOperator = "";
           operandLeft = NaN;
           operandRight = NaN;
+        }
+
+        if(errorState) {
+          setErrorState(false);
         }
 
         lastButtonClicked = button;
@@ -111,29 +111,22 @@ function initializeButtonEvents(){
 
   const equal = document.querySelector("#equals");
   equal.addEventListener('click', () => {
-
     //pressing = = = = = to repeat the last operation
     if(isLastButtonEquals() && hasStoredEqualsOperator()){
-        //here:
-
-        operandLeft = lastResult.asFloat;
+        operandLeft = lastResult;
         let result = operate(operandLeft, operandRight, equalsOperator);
-
-        lastResult.asFloat = result;
-        lastResult.asString = getDisplayString(result, MAX_DIGITS);
+        lastResult = result;
 
         displayOperation.textContent = `${operandLeft} ${equalsOperator} ${operandRight} =`
-        displayMain.textContent = lastResult.asString;
+        displayMain.textContent = getDisplayString(lastResult, MAX_DIGITS);
     } else if (hasStoredOperator()) { 
       //normal a + b type of operation
       operandRight = parseFloat(displayMain.textContent);
       let result = operate(operandLeft, operandRight, operator);
-
-      lastResult.asFloat = result;
-      lastResult.asString = getDisplayString(result, MAX_DIGITS);
+      lastResult = result;
 
       displayOperation.textContent = `${operandLeft} ${operator} ${operandRight} =`
-      displayMain.textContent = getDisplayString(result, MAX_DIGITS);
+      displayMain.textContent = getDisplayString(lastResult, MAX_DIGITS);
     } else { 
       //pressing = without an operator
       operandLeft = parseFloat(displayMain.textContent);
@@ -211,10 +204,12 @@ function operate(num1, num2, operator) {
 
 function getDisplayString(number, maxLength){
   if(isNaN(number)){
+    setErrorState(true);
     return "Error!";
   }
 
   if(!isFinite(number)){
+    setErrorState(true);
     return "Overflow!";
   }
 
@@ -222,33 +217,26 @@ function getDisplayString(number, maxLength){
 
   //force large numbers to exponential format
   const integerDigits = parseInt(number).toString().length;
-  let stringValue;
   //force very small numbers to exponential format
   const lowerBound = (number > 0) ? Math.pow(10, -(maxLength) + "0.".length) : Math.pow(-10, -(maxLength) + "-0.".length);
-  // console.log(`  lowerBound: ${lowerBound}`);
+
+  let stringValue;
 
   if(integerDigits > maxLength){
     stringValue = number.toExponential(maxLength);
   } else if (number > 0 && number < lowerBound){ //positive out of bounds
     stringValue = number.toExponential(maxLength - "0.".length);
-  } else if (number < 0 && Math.abs(number) < Math.abs(lowerBound)){
-    // console.log("  negative out of bounds");  //negative out of bounds
+  } else if (number < 0 && Math.abs(number) < Math.abs(lowerBound)){ //negative out of bounds
     stringValue = number.toExponential(maxLength - "-0.".length);
   } else {
-    // console.log("  in bounds");
     stringValue = (number > 0) ? number.toFixed(maxLength - "0.".length) : number.toFixed(maxLength - "-0.".length);
   }
-
-  console.log(` stringValue: ${stringValue}`);
 
   //comes in with exponent or as a low/high enough number to need one based on maxLength -> convert to exponent and cut down to length
   if(stringValue.indexOf("e") > -1){ 
     const nonDecimalDigits = stringValue.indexOf(".") + 1 + (stringValue.length - stringValue.indexOf("e"));
     const maxDecimalPlaces = maxLength - nonDecimalDigits;
-
-    console.log(`  decimal places: ${maxDecimalPlaces}`);
     result = number.toExponential(maxDecimalPlaces);
-    console.log(`  exponential at max length: ${result}`);
 
     //remove extra zeroes 1.230000000e+20 -> 1.23e+20
     let decimalPlaces = result.substring(result.indexOf(".") + 1, result.indexOf("e") - result.indexOf(".") + 1)
@@ -262,52 +250,55 @@ function getDisplayString(number, maxLength){
     //piece back together
     result = result.substring(0, result.indexOf(".")) + "." + decimalPlaces + result.substring(result.indexOf("e"));
 
-    return result;
-  }
-
-  //if inside bounds but < 1 or > -1
-  if (stringValue.startsWith("0.") || stringValue.startsWith("-0.")){ //starts with 0.
+  } else if (stringValue.startsWith("0.") || stringValue.startsWith("-0.")){ //inside bounds but starts with 0
     result = stringValue.startsWith("0.") ? number.toFixed(maxLength - "0.".length) : number.toFixed(maxLength - "-0.".length);
-
-    if (result.includes(".")){
-      result = result.replace(/0*$/, ""); //trims 0 from the end
-    }
-
-    result = result.replace(/\.$/, "", ""); //trims . from the end
-
-    return result;
-  } 
-  
-  //"normal" numbers 123456.789000 or -123456.7890000
-  if(number.toString().length > maxLength) {
-    if((stringValue.indexOf(".") + 1) === maxLength){
-      result = Math.round(number).toString();
+  } else { //"normal" numbers 123456.789000 or -123456.7890000
+    if(number.toString().length > maxLength) {
+      if((stringValue.indexOf(".") + 1) === maxLength){
+        result = Math.round(number).toString();
+      } else {
+        result = stringValue.substring(0, maxLength)
+      }
     } else {
-      result = stringValue.substring(0, maxLength)
+      result = number.toString();
     }
-  } else {
-    result = number.toString();
   }
 
-  console.log(`Result: ${result}`);
-
-  if (result.includes(".")){
-    result = result.replace(/0*$/, ""); //trims 0 from the end
-  }
-
-  result = result.replace(/\.$/, "", ""); //trims . from the end
+  result = trimDecimalZeros(result);
   return result;
+}
+
+function trimDecimalZeros (numberString){
+  if (numberString.includes(".")){
+    numberString = numberString.replace(/0*$/, ""); //trims 0 from the end
+  }
+
+  numberString = numberString.replace(/\.$/, "", ""); //trims . from the end
+  return numberString;
+}
+
+function setErrorState(isError){
+  const operationButtons = Array.from(document.querySelectorAll(".operation-button"));
+  operationButtons.forEach(button => {
+    if(isError){
+      errorState = true;
+      button.classList.add("disabled-button");
+      button.disabled = true;
+    } else {
+      errorState = false;
+      button.classList.remove("disabled-button");
+      button.disabled = false;
+    }
+  });
 }
 
 function resetCalculator() {
   operandLeft = NaN;
   operandRight = NaN;
+  lastResult = NaN;
   resetInputOnNextDigit = true;
   lastButtonClicked = null;
   operator = "";
-
-  lastResult.asFloat = NaN;
-  lastResult.asString = NaN.toString();
 
   displayMain.textContent = "0";
   displayOperation.textContent = "";
