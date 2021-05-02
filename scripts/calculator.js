@@ -158,12 +158,12 @@ function appendToDisplay(digit) {
     resetInputOnNextDigit = false;
   }
 
-  if (digit === "." && displayText.indexOf(".") === -1){
+  if (digit === "." && displayText.indexOf(".") === -1){ //first decimal
     displayText += digit;
   } else {
     if (displayText.startsWith("0") && displayText.indexOf(".") === -1) {
       displayText = digit;
-    } else {
+    } else if (digit !== ".") {
       displayText += digit;
     }
   }
