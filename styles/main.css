@@ -10,7 +10,7 @@ h1 {
 
 .calc-main {
   display: flex;
-  width: 355px;
+  width: 365px;
   flex-wrap: wrap;
   justify-content: space-evenly;
   font-family: monospace;

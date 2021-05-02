@@ -7,6 +7,12 @@ let lastButtonClicked;
 let operandLeft = NaN;
 let operandRight = NaN;
 
+//
+let lastResult = {  
+    asFloat: NaN,
+    asString: NaN.toString()
+}
+
 let equalsOperator = "";
 let operator = "";
 
@@ -107,15 +113,25 @@ function initializeButtonEvents(){
   equal.addEventListener('click', () => {
 
     //pressing = = = = = to repeat the last operation
-    if(isLastButtonEquals() && hasStoredEqualsOperator()){ 
-        operandLeft = parseFloat(displayMain.textContent);
+    if(isLastButtonEquals() && hasStoredEqualsOperator()){
+        //here:
+
+        operandLeft = lastResult.asFloat;
         let result = operate(operandLeft, operandRight, equalsOperator);
+
+        lastResult.asFloat = result;
+        lastResult.asString = getDisplayString(result, MAX_DIGITS);
+
         displayOperation.textContent = `${operandLeft} ${equalsOperator} ${operandRight} =`
-        displayMain.textContent = getDisplayString(result, MAX_DIGITS);
+        displayMain.textContent = lastResult.asString;
     } else if (hasStoredOperator()) { 
       //normal a + b type of operation
       operandRight = parseFloat(displayMain.textContent);
       let result = operate(operandLeft, operandRight, operator);
+
+      lastResult.asFloat = result;
+      lastResult.asString = getDisplayString(result, MAX_DIGITS);
+
       displayOperation.textContent = `${operandLeft} ${operator} ${operandRight} =`
       displayMain.textContent = getDisplayString(result, MAX_DIGITS);
     } else { 
@@ -129,8 +145,6 @@ function initializeButtonEvents(){
     equalsOperator = (operator) ? operator : equalsOperator;
     operator = "";
     lastButtonClicked = equal;
-
-    updateExpressionDisplay();
   });
 }
 
@@ -177,29 +191,6 @@ function hasStoredOperator(){
 
 function hasStoredEqualsOperator(){
   return Boolean(equalsOperator);
-}
-
-function updateExpressionDisplay(){
-  let displayItems = [];
-  //if we have an operator build the expression from left to right and display
-  // if(!isNaN(operandLeft)) {
-  //   displayItems.push(operandLeft);
-    
-  //   if(operator){
-  //     displayItems.push(operator);
-
-  //     if(!isNaN(operandRight)){
-  //       displayItems.push(operandRight);
-  //     }
-  //   }
-  // }
-  
-  if(isLastButtonEquals()){
-    displayItems.push("=");
-  }
-
-  //displayOperation.textContent = displayItems.join(" ");
-  console.log(displayItems.join(" "));
 }
 
 function operate(num1, num2, operator) {
@@ -288,22 +279,23 @@ function getDisplayString(number, maxLength){
   } 
   
   //"normal" numbers 123456.789000 or -123456.7890000
-
   if(number.toString().length > maxLength) {
     if((stringValue.indexOf(".") + 1) === maxLength){
       result = Math.round(number).toString();
     } else {
-      stringValue.substring(0, maxLength)
+      result = stringValue.substring(0, maxLength)
     }
   } else {
     result = number.toString();
   }
 
-  console.log(result);
+  console.log(`Result: ${result}`);
 
-  if(result.indexOf)
+  if (result.includes(".")){
+    result = result.replace(/0*$/, ""); //trims 0 from the end
+  }
 
-// console.log(`Number ${number} converted string: ${result}`);
+  result = result.replace(/\.$/, "", ""); //trims . from the end
   return result;
 }
 
@@ -313,6 +305,9 @@ function resetCalculator() {
   resetInputOnNextDigit = true;
   lastButtonClicked = null;
   operator = "";
+
+  lastResult.asFloat = NaN;
+  lastResult.asString = NaN.toString();
 
   displayMain.textContent = "0";
   displayOperation.textContent = "";
