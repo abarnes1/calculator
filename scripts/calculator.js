@@ -16,8 +16,16 @@ function initializeButtonEvents(){
     if(button.value){
       button.addEventListener('click', (e) => {
         appendToDisplay(e.target.value);
+
+        if(isLastButtonEquals()){
+          displayOperation.textContent = "";
+          operator = "";
+          equalsOperator = "";
+          operandLeft = NaN;
+          operandRight = NaN;
+        }
+
         lastButtonClicked = button;
-        console.log(lastButtonClicked);
       });
     }
   });
@@ -68,19 +76,41 @@ function initializeButtonEvents(){
 
   const squareRoot = document.querySelector("#squareRoot");
   squareRoot.addEventListener('click', () => {
-    const text = displayMain.textContent;
-    let number = stringToNumber(text);
-    if(number){
-      displayOperation.textContent = `sqrt(${number})`;
-      number = Math.sqrt(number);
-      displayMain.textContent = numberToString(number);
+    //if we have an operator, square root of current input is right operand
+    if(hasStoredOperator()){
+      let number = stringToNumber(displayMain.textContent);
+      operandRight = Math.sqrt(number);
+      console.log(operandRight);
 
-      if(lastOperator === equal.id){
-        operand1 = number;
-      } else {
-        operand2 = number;
-      }
+      displayOperation.textContent = `${operandLeft} ${operator} sqrt(${number})`;
+      displayMain.textContent = numberToString(operandRight);
+    } else {
+      //no operator so square root the input and treat as left operand
+      let number = stringToNumber(displayMain.textContent);
+      operandLeft = Math.sqrt(number);
+      console.log(`left: ${operandLeft}`);
+
+      displayOperation.textContent = `sqrt(${number})`;
+      displayMain.textContent = numberToString(operandLeft);
     }
+
+    lastButtonClicked = squareRoot;
+
+
+    // let number = stringToNumber(displayMain.textContent);
+    // if(number){
+    //   displayOperation.textContent = `sqrt(${number})`;
+    //   number = Math.sqrt(number);
+    //   displayMain.textContent = numberToString(number);
+
+    //   //&Sqrt;
+
+    //   // if(lastOperator === equal.id){
+    //   //   operand1 = number;
+    //   // } else {
+    //   //   operand2 = number;
+    //   // }
+    // }
   });
 
   const clearInput = document.querySelector("#clearInput");
@@ -96,12 +126,12 @@ function initializeButtonEvents(){
     console.log(`operator: ${operator}, equalsOperator: ${equalsOperator}`);
 
     //pressing = = = = = to repeat the last operation
-    if(isLastButtonEquals()){ 
+    if(isLastButtonEquals() && hasStoredEqualsOperator()){ 
         operandLeft = stringToNumber(displayMain.textContent);
         let result = operate(operandLeft, operandRight, equalsOperator);
         displayOperation.textContent = `${operandLeft} ${equalsOperator} ${operandRight} =`
         displayMain.textContent = numberToString(result);
-    } else if (operator) { 
+    } else if (hasStoredOperator()) { 
       //normal a + b type of operation
       operandRight = stringToNumber(displayMain.textContent);
       let result = operate(operandLeft, operandRight, operator);
@@ -118,6 +148,8 @@ function initializeButtonEvents(){
     equalsOperator = (operator) ? operator : equalsOperator;
     operator = "";
     lastButtonClicked = equal;
+
+    updateExpressionDisplay();
   });
 }
 
@@ -162,26 +194,31 @@ function hasStoredOperator(){
   return Boolean(operator);
 }
 
+function hasStoredEqualsOperator(){
+  return Boolean(equalsOperator);
+}
+
 function updateExpressionDisplay(){
   let displayItems = [];
   //if we have an operator build the expression from left to right and display
-  if(!isNaN(operandLeft)) {
-    displayItems.push(operandLeft);
+  // if(!isNaN(operandLeft)) {
+  //   displayItems.push(operandLeft);
     
-    if(operator){
-      displayItems.push(operator);
+  //   if(operator){
+  //     displayItems.push(operator);
 
-      if(!isNaN(operandRight)){
-        displayItems.push(operandRight);
-      }
-    }
-  }
-
+  //     if(!isNaN(operandRight)){
+  //       displayItems.push(operandRight);
+  //     }
+  //   }
+  // }
+  
   if(isLastButtonEquals()){
     displayItems.push("=");
   }
 
-  displayOperation.textContent = displayItems.join(" ");
+  //displayOperation.textContent = displayItems.join(" ");
+  console.log(displayItems.join(" "));
 }
 
 function stringToNumber(stringNumber){
@@ -216,15 +253,17 @@ function operate(num1, num2, operator) {
     computed = num1 / num2;
   }
 
-  // if (operator === 'sqrt') {
-  //   computed = Math.sqrt(num2);
-  // }
-
   return computed;
 }
 
 function numberToString(number) {
-  return isNaN(number) ? "Error!" : number.toString();
+  let result;
+  if (isNaN(number)) {
+    result = "Error!";
+  } else if (!isFinite(number)){
+    result = "Overflow!";
+  }
+  return isNaN(number) ? "Error :(" : number.toString();
 }
 
 function resetCalculator() {
@@ -239,4 +278,4 @@ function resetCalculator() {
 }
 
 resetCalculator();
-initializeButtonEvents();
+initializeButtonEvents(); 
