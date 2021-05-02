@@ -77,19 +77,8 @@ h1 {
 }
 
 .disabled-button {
-  /* background-color: chartreuse; */
   opacity: 25%;
 }
-
-/* .utility-button {
-  background-color: rgb(207, 17, 17);
-  color: whitesmoke;
-} */
-
-/* button::-moz-focus-inner {
-  padding: 0px;
-  border: 0px;
-} */
 
 #model {
   width: 100%;

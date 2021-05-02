@@ -1,3 +1,7 @@
+/*
+  This is a test file I ran in the console to test numbers converting to the correct length string.  
+  It's no longer required, but I will leave it here in case I need to revisit testing and for you to admire the headache I went through.  :)
+*/
 function conversionTests(){
   let test;
   let result;
@@ -106,7 +110,6 @@ function conversionTests(){
   // console.log(`testing: ${test}`);
   // result = getDisplayString(test, MAX_DIGITS);
   // console.log(` result: ${result}`)
-
 }
 
 conversionTests();

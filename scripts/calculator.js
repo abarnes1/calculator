@@ -41,7 +41,6 @@ function initializeButtonEvents(){
     if(button.value){
       button.addEventListener('click', (e) => {
         if(hasStoredOperator()){ 
-          
           //if last button was not an operator: do the operation, store the new operator, and update the display
           if(!isLastButtonOperator()){ 
             operandRight = parseFloat(displayMain.textContent);
