@@ -5,45 +5,65 @@
     <link rel="stylesheet" href="styles/main.css" type="text/css">
   </head>
   <body>
-    <h1>Calculator</h1>
-    <div class="calc-main">
-      <div class="calc-display">
-        <div id="displayOperation">1230</div>
-        <div id="displayMain">12345</div>
+    <h1 class="header-footer">Javascript Calculator</h1>
+    <div class="body-main">
+      <div class="calc-main">
+        <div class="calc-display">
+          <div id="displayOperation">1230</div>
+          <div id="displayMain">12345</div>
+        </div>
+
+        <div id="model">The Odin Project JS-108</div>
+
+        <div class="button-container">
+          <button id="negate" class="calc-button operation-button" event-key="[">+/-</button>
+          <button id="squareRoot" class="calc-button operation-button" event-key="]"]>&Sqrt;</button>
+          <button id="clearAll" class="calc-button operation-button" event-key="Escape">AC</button>
+          <button id="divide" class="calc-button operation-button" value="/" event-key="/">/</button>
+
+          <button class="calc-button digit-button" value="7" event-key="7">7</button>
+          <button class="calc-button digit-button" value="8" event-key="8">8</button>
+          <button class="calc-button digit-button" value="9" event-key="9">9</button>
+          <button id="multiply" class="calc-button operation-button" value="x" event-key="*">x</button>
+
+          <button class="calc-button digit-button" value="4" event-key="4">4</button>
+          <button class="calc-button digit-button" value="5" event-key="5">5</button>
+          <button class="calc-button digit-button" value="6" event-key="6">6</button>
+          <button id="subtract" class="calc-button operation-button" value="-">-</button>
+
+          <button class="calc-button digit-button" value="1" event-key="1">1</button>
+          <button class="calc-button digit-button" value="2" event-key="2">2</button>
+          <button class="calc-button digit-button" value="3" event-key="3">3</button>
+          <button id="add" class="calc-button operation-button" value="+" event-key="+">+</button>
+          
+          <button class="calc-button digit-button" value="." event-key=".">.</button>
+          <button class="calc-button digit-button" value="0" event-key="0">0</button>
+          <button id="clearInput" class="calc-button operation-button" event-key="Delete">C</button>
+          <button id="equals" class="calc-button operation-button" event-key="Enter">=</button>
+        </div>
       </div>
 
-      <div id="model">The Odin Project JS-108</div>
-
-      <div class="button-container">
-        <button id="negate" class="calc-button operation-button" event-key="[">+/-</button>
-        <button id="squareRoot" class="calc-button operation-button" event-key="]"]>&Sqrt;</button>
-        <button id="clearAll" class="calc-button operation-button" event-key="Escape">AC</button>
-        <button id="divide" class="calc-button operation-button" value="/" event-key="/">/</button>
-
-        <button class="calc-button digit-button" value="7" event-key="7">7</button>
-        <button class="calc-button digit-button" value="8" event-key="8">8</button>
-        <button class="calc-button digit-button" value="9" event-key="9">9</button>
-        <button id="multiply" class="calc-button operation-button" value="x" event-key="*">x</button>
-
-        <button class="calc-button digit-button" value="4" event-key="4">4</button>
-        <button class="calc-button digit-button" value="5" event-key="5">5</button>
-        <button class="calc-button digit-button" value="6" event-key="6">6</button>
-        <button id="subtract" class="calc-button operation-button" value="-">-</button>
-
-        <button class="calc-button digit-button" value="1" event-key="1">1</button>
-        <button class="calc-button digit-button" value="2" event-key="2">2</button>
-        <button class="calc-button digit-button" value="3" event-key="3">3</button>
-        <button id="add" class="calc-button operation-button" value="+" event-key="+">+</button>
-        
-        <button class="calc-button digit-button" value="." event-key=".">.</button>
-        <button class="calc-button digit-button" value="0" event-key="0">0</button>
-        <button id="clearInput" class="calc-button operation-button" event-key="Delete">C</button>
-        <button id="equals" class="calc-button operation-button" event-key="Enter">=</button>
+      <div class="keyboard-info">
+        <h3>Keyboard Shortcuts:</h3>
+        <p>Number and operator keys work. (Numpad too!)</p>
+        <br>
+        <p>Other operations:</p>
+        <ul>
+          <li>Equals: <b>Enter</b></li>
+          <li>Negate: <b>[</b></li>
+          <li>Square Root: <b>]</b></li>
+          <li>Clear: <b>Delete</b></li>
+          <li>All Clear: <b>Escape</b></li>
+        </ul> 
       </div>
-    </div>
+  </div>
 
-    <div>keyboard info</div>
-    <div>link to ti-108 image search</div>
+  <div class="header-footer">
+    <a href="https://www.google.com/search?q=ti-108+calculator" text="google search for TI-108 calculator">Does this style calculator look familiar?</a>
+    <br>
+    <a href="http://www.freepik.com">Background Designed by Freepik</a>
+  </div>
+
     <script src="scripts/calculator.js" type="text/javascript"></script>
     <!-- <script src="scripts/test.js" type="text/javascript"></script> -->
   </body>

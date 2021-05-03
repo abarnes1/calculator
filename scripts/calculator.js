@@ -12,21 +12,14 @@ let errorState = false;
 let equalsOperator = "";
 let operator = "";
 
-function initializeKeyBinds() {
+function initializeKeyPressEvents() {
   window.addEventListener('keydown', (e) => {
     let button = document.querySelector(`button[event-key="${e.key}"]`);
 
     if(button){
       button.click();
-      button.active = true;
     }
-    console.log(button);
-    console.log(e.key)
   });
-  // const allButtons = Array.from(document.querySelectorAll("button"));
-  // allButtons.forEach(button => {
-    
-  // });
 }
 
 function initializeButtonEvents(){
@@ -159,6 +152,10 @@ function initializeButtonEvents(){
 
 function appendToDisplay(digit) {
   let displayText = displayMain.textContent;
+
+  if(displayText.length === 15 && !resetInputOnNextDigit){
+    return;
+  }
 
   if (resetInputOnNextDigit || isNaN(displayText)) {
     displayText = "0";
@@ -322,4 +319,4 @@ function resetCalculator() {
 
 resetCalculator();
 initializeButtonEvents(); 
-initializeKeyBinds();
+initializeKeyPressEvents();
